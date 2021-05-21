@@ -1,0 +1,369 @@
+swagger: '2.0'
+info:
+  title: Recipe API
+  version: '1.0'
+host: serverRoot
+basePath: /demo-api/recipeManagement/v1/
+schemes:
+  - https
+  - http
+consumes:
+  - application/json;charset=utf-8
+produces:
+  - application/json;charset=utf-8
+tags:
+  - name: recipe
+paths:
+  /recipe:
+    get:
+      operationId: listRecipe
+      summary: List or find Recipe objects
+      description: This operation list or find Recipe entities
+      tags:
+        - recipe
+      parameters:
+        - in: query
+          name: filters
+          description: "Comma-separated properties with regex value for filter the record ex: property1=100,property2=200,property3=150"
+          required: false
+          type: string
+        - name: fields
+          description: Comma-separated properties to be provided in response
+          required: false
+          in: query
+          type: array
+          items:
+            type: string
+        - name: sort
+          description: "Comma-separated properties for sorting. ex: name,id,href"
+          required: false
+          in: query
+          type: string
+        - name: offset
+          description: Requested index for start of resources to be provided in response
+          required: false
+          in: query
+          type: integer
+        - name: limit
+          description: Requested number of resources to be provided in response
+          required: false
+          in: query
+          type: integer
+      responses:
+        '200':
+          description: Success
+          headers:
+            X-Result-Count:
+              description: Actual number of items returned in the response body
+              type: integer
+            X-Total-Count:
+              description: Total number of items matching criteria
+              type: integer
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Recipe'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/Error'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/Error'
+        '404':
+          description: Not Found
+          schema:
+            $ref: '#/definitions/Error'
+        '405':
+          description: Method Not allowed
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      operationId: createRecipe
+      summary: Creates a Recipe
+      description: This operation creates a Recipe entity.
+      tags:
+        - recipe
+      parameters:
+        - name: recipe
+          description: The Recipe to be created
+          required: true
+          schema:
+            $ref: '#/definitions/Recipe'
+          in: body
+      responses:
+        '201':
+          description: Created
+          schema:
+            $ref: '#/definitions/Recipe'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/Error'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/Error'
+        '405':
+          description: Method Not allowed
+          schema:
+            $ref: '#/definitions/Error'
+        '409':
+          description: Conflict
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Error'
+  '/recipe/{id}':
+    get:
+      operationId: retrieveRecipe
+      summary: Retrieves a Recipe by ID
+      description: This operation retrieves a Recipe entity.
+      tags:
+        - recipe
+      parameters:
+        - name: id
+          description: Identifier of the Recipe
+          required: true
+          type: string
+          in: path
+        - name: fields
+          description: Comma-separated properties to provide in response
+          required: false
+          type: string
+          in: query
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/Recipe'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/Error'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/Error'
+        '404':
+          description: Not Found
+          schema:
+            $ref: '#/definitions/Error'
+        '405':
+          description: Method Not allowed
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Error'
+    put:
+      operationId: updateRecipe
+      summary: Update a Recipe
+      description: This operation update a Recipe entity.
+      tags:
+        - recipe
+      parameters:
+        - name: id
+          description: Identifier of the Recipe
+          required: true
+          type: string
+          in: path
+        - name: recipe
+          description: The Recipe to be updated
+          required: true
+          schema:
+            $ref: '#/definitions/Recipe'
+          in: body
+      responses:
+        '200':
+          description: Updated
+          schema:
+            $ref: '#/definitions/Recipe'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/Error'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/Error'
+        '405':
+          description: Method Not allowed
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Error'
+    patch:
+      operationId: patchRecipe
+      summary: Updates partially a Recipe
+      description: This operation updates partially a Recipe entity.
+      tags:
+        - recipe
+      parameters:
+        - name: id
+          description: Identifier of the Recipe
+          required: true
+          type: string
+          in: path
+        - name: recipe
+          description: The Recipe to be updated
+          required: true
+          schema:
+            $ref: '#/definitions/Any'
+          in: body
+      responses:
+        '200':
+          description: Updated
+          schema:
+            $ref: '#/definitions/Recipe'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/Error'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/Error'
+        '404':
+          description: Not Found
+          schema:
+            $ref: '#/definitions/Error'
+        '405':
+          description: Method Not allowed
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      operationId: deleteRecipe
+      summary: Deletes a Recipe
+      description: This operation deletes a Recipe entity.
+      tags:
+        - recipe
+      parameters:
+        - name: id
+          description: Identifier of the Recipe
+          required: true
+          type: string
+          in: path
+      responses:
+        '204':
+          description: Deleted
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/Error'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/Error'
+        '404':
+          description: Not Found
+          schema:
+            $ref: '#/definitions/Error'
+        '405':
+          description: Method Not allowed
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Error'
+definitions:
+  Any: {}
+  Instruction:
+    type: object
+    description: The ingredients required to create a recipe
+    properties:
+      stepNo:
+        type: integer
+        description: Unique step no
+      stepDescription:
+        type: string
+        description: Describe the step
+  Recipe:
+    type: object
+    description: The Recipe entity.
+    properties:
+      id:
+        type: string
+        description: Unique identifier for Recipe
+      href:
+        type: string
+        description: Url used to reference the recipe.
+      name:
+        type: string
+        description: 'A word, term, or phrase by which the Recipe is known and distinguished from other Recipes.'
+      creationDateTime:
+        type: string
+        description: A period of time, when reeipe was created.
+      isVegetarian:
+        type: boolean
+        description: 'If true, this Boolean indicates that the recipe is a vebetarian'
+      noOfPeopleCanEat:
+        type: integer
+        description: 'How many people can eat'
+      cookingInstructions:
+        description: Ingredients required for this recipe
+        items:
+          $ref: '#/definitions/Instruction'
+        type: array
+      ingredients:
+        type: array
+        items:
+          type: string
+  Error:
+    description: 'Used when an API throws an Error, typically with a HTTP error response-code (3xx, 4xx, 5xx)'
+    type: object
+    required:
+      - code
+      - reason
+    properties:
+      code:
+        type: string
+        description: 'Application relevant detail, defined in the API or a common list.'
+      reason:
+        type: string
+        description: Explanation of the reason for the error which can be shown to a client user.
+      message:
+        type: string
+        description: More details and corrective actions related to the error which can be shown to a client user.
+      status:
+        type: string
+        description: HTTP Error code extension
