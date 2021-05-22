@@ -366,3 +366,8 @@ definitions:
       status:
         type: string
         description: HTTP Error code extension
+securityDefinitions:
+  basicAuth:
+    type: basic
+security:
+  - basicAuth: []
