@@ -54,6 +54,12 @@
             <version>2.2</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>1.5.8</version>
+        </dependency>
+
 		<dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger2</artifactId>
@@ -133,7 +139,7 @@
                                 <goal>generate</goal>
                             </goals>
                             <configuration>
-                                <inputSpec>${project.basedir}/src/main/resources/swagger/api.yaml</inputSpec>
+                                <inputSpec>${project.basedir}/src/main/resources/static/api.yaml</inputSpec>
                                 <generatorName>spring</generatorName>
                                 <apiPackage>com.mycompany.app.recipe.web.api</apiPackage>
                                 <modelPackage>com.mycompany.app.recipe.web.api.model</modelPackage>
