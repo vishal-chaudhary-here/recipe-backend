@@ -160,14 +160,18 @@ public class RecipeApiDelegateImpl implements RecipeApiDelegate {
         Map<String, String> filterMap = getFilterMap(filters);
         Map<String, String> sortMap = getFilterMap(sort);
 
-        Query query = RecipeUtil.getFilteredQuery(filterMap, fieldArray, sortMap, offset == null ? 0 : offset, limit == null ? 10 : limit);
-
+        Query query = RecipeUtil.getFilteredQuery(filterMap, fieldArray, sortMap);
+		long recordCount = recipeRepository.countFilteredRecipe(query);
+		
+		query.skip(offset == null ? 0 : offset);
+        query.limit(limit == null ? 10 : limit);
+		
         List<Recipe> recipeList = recipeRepository.getFilteredRecipe(query);
 
         if(recipeList.size() > 0) {
             HttpHeaders headers = new HttpHeaders();
             headers.add("X-Result-Count", String.valueOf(recipeList.size()));
-            headers.add("X-Total-Count", String.valueOf(recipeRepository.countFilteredRecipe(query)));
+            headers.add("X-Total-Count", String.valueOf(recordCount));
 
             return new ResponseEntity<List<Recipe>>(recipeList, headers, HttpStatus.OK);
         }

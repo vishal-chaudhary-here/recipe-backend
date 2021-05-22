@@ -27,8 +27,7 @@ public interface RecipeUtil {
             .withStringMatcher(StringMatcher.EXACT);
     }
 
-    static Query getFilteredQuery(Map<String, String> filterMap, String[] fields, Map<String, String> sortMap, long skip,
-            int limit) {
+    static Query getFilteredQuery(Map<String, String> filterMap, String[] fields, Map<String, String> sortMap) {
         Query query = new Query();
 
         if (fields != null && fields.length > 0) {
@@ -42,9 +41,6 @@ public interface RecipeUtil {
         if (sortMap != null && sortMap.containsKey("DESC")) {
             query.with(Sort.by(Direction.DESC, sortMap.get("DESC").split(",")));
         }
-
-        query.skip(skip);
-        query.limit(limit);
 
         filterMap.entrySet().forEach(e -> {
             Criteria criteria =  null;
