@@ -7,23 +7,14 @@ springdoc:
   api-docs:
     enabled: true
 
-userconfig:
-  user1:
-    username: admin
-    password: admin
-    roles: admin, user
-  user2:
-    username: user
-    password: user
-    roles: user
-
 server:
   port: 8081
 
-application:
-    name: recipe
 spring:
   data:
     mongodb:
       uri: mongodb://localhost:27017
-      database: tmf
+      database: recipe
+      # authentication-database: admin
+      # username: admin
+      # password: admin

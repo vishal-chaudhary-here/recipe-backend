@@ -1,36 +1,29 @@
 package com.mycompany.app.recipe.service;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import com.mycompany.app.recipe.repository.RecipeRepository;
+import com.mycompany.app.recipe.util.MessageConstants;
 import com.mycompany.app.recipe.util.RecipeUtil;
-import com.mycompany.app.recipe.web.api.ApiUtil;
+import com.mycompany.app.recipe.util.StringConstants;
 import com.mycompany.app.recipe.web.api.RecipeApiDelegate;
 import com.mycompany.app.recipe.web.api.model.Recipe;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
-import org.springframework.data.domain.ExampleMatcher.StringMatcher;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-//import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.mycompany.app.recipe.exception.BadRequestException;
 import com.mycompany.app.recipe.exception.ConflictException;
 import com.mycompany.app.recipe.exception.NotFoundException;
-
-import org.springframework.http.MediaType;
 
 @Service
 public class RecipeApiDelegateImpl implements RecipeApiDelegate {
@@ -45,22 +38,21 @@ public class RecipeApiDelegateImpl implements RecipeApiDelegate {
     public ResponseEntity<Recipe> createRecipe(Recipe receipe) {
         
         if(RecipeUtil.PREDICATE_ID_IS_NULL_EMPTY.or(RecipeUtil.PREDICATE_HREF_IS_NULL_EMPTY).negate().test(receipe)) {
-            throw new BadRequestException("Id and Href must not present in request", 
-            "Please remove the Id and Href Property");
+            throw new BadRequestException(MessageConstants.ID_AND_HREF_MUST_NOT_PRESENT, 
+            MessageConstants.PLEASE_REMOVE_ID_AND_HREF_PROPERTY);
         }
 
         if(RecipeUtil.PREDICATE_NAME_IS_NULL_EMPTY.test(receipe)) {
-            throw new BadRequestException("Name must present in request", 
-            "Please Provide Name");
+            throw new BadRequestException(MessageConstants.UNIQUE_NAME_REQUIRED, 
+            MessageConstants.PLEASE_PROVIDE_NAME);
         }
 
-        String[] ignoreProperties = {"id","href","creationDateTime","isVegetarian","noOfPeopleCanEat","cookingInstructions","ingredients"};
         Example<Recipe> example = Example.of(new Recipe().name(receipe.getName()), 
-            RecipeUtil.getExampleMatcherForId(ignoreProperties));
+            RecipeUtil.getExampleMatcherForId(StringConstants.RECIPE_PROPERTIES_EXCEPT_NAME));
         
         if(recipeRepository.exists(example)) {
-            throw new ConflictException("Name Already Present", 
-            "Recipe Name is Already Present");
+            throw new ConflictException(MessageConstants.NAME_ALREADY_PRESENT, 
+            MessageConstants.RECIPE_NAME_ALREADY_PRESENT);
         }
 
         Recipe result = recipeRepository.save(receipe);
@@ -73,13 +65,13 @@ public class RecipeApiDelegateImpl implements RecipeApiDelegate {
     public ResponseEntity<Recipe> retrieveRecipe(String id, String fields) {
 
         if(RecipeUtil.STRING_IS_NULL_OR_EMPTY.test(id)) {
-            throw new BadRequestException("Id and Href must not present in request", 
-            "Please remove the Id and Href Property");
+            throw new BadRequestException(MessageConstants.ID_MUST_NOT_NULL, 
+            MessageConstants.PLEASE_PROVIDE_ID);
         }
 
-        String[] field = {"id", "href"};
+        String[] field = {StringConstants.ID, StringConstants.HREF};
         if(fields != null && fields.length() > 0) {
-            field = fields.split(",");
+            field = fields.split(StringConstants.COMMA_STRING);
         }
 
         List<Recipe> recipe = recipeRepository.getRecipe(Arrays.asList(id),  field);
@@ -88,8 +80,8 @@ public class RecipeApiDelegateImpl implements RecipeApiDelegate {
             HttpStatus.OK);
         }
 
-        throw new NotFoundException("Id not exist", 
-            "Please provide valid Id");
+        throw new NotFoundException(MessageConstants.ID_NOT_EXIST, 
+            MessageConstants.PLEASE_PROVIDE_VALID_ID);
     }
 
     private Map<String, String> getFilterMap(String filterString) {
@@ -104,15 +96,15 @@ public class RecipeApiDelegateImpl implements RecipeApiDelegate {
         StringBuilder stringBuilder = new StringBuilder();
 
         String key = null;
-        String previousCommaValue = "";
+        String previousCommaValue = StringConstants.EMPTY;
 
         for(int i=0 ; i< charArray.length; i++) {
             char scannedChar= charArray[i];
-            if(scannedChar == '=') {
+            if(scannedChar == StringConstants.EQUAL_CHAR) {
                 if(key != null && !key.isBlank()) {
                     filterMap.put(key, previousCommaValue);
                     key = null;
-                    previousCommaValue = "";
+                    previousCommaValue = StringConstants.EMPTY;
                 }
                 
                 key = stringBuilder.toString();
@@ -120,7 +112,7 @@ public class RecipeApiDelegateImpl implements RecipeApiDelegate {
                 continue;
             }
 
-            if(scannedChar == ',') {
+            if(scannedChar == StringConstants.COMMA_CHAR) {
                 if(!previousCommaValue.isBlank()) {
                     stringBuilder.insert(0, scannedChar);
                 }
@@ -134,7 +126,7 @@ public class RecipeApiDelegateImpl implements RecipeApiDelegate {
         }
 
         if(!previousCommaValue.isBlank()) {
-            stringBuilder.insert(0, ',');
+            stringBuilder.insert(0, StringConstants.COMMA_CHAR);
         }
 
         filterMap.put(key, previousCommaValue.concat(stringBuilder.toString()));
@@ -147,8 +139,8 @@ public class RecipeApiDelegateImpl implements RecipeApiDelegate {
         Integer offset, Integer limit) {
         
         if(limit != null && limit > 100) {
-            throw new BadRequestException("Limit Size Exceed", 
-            "Max fetch limit 100");
+            throw new BadRequestException(MessageConstants.LIMIT_SIZE_EXCEED, 
+            MessageConstants.MAX_FETCH_LIMIT_100);
         }
 
         String[] fieldArray = null;
@@ -170,33 +162,36 @@ public class RecipeApiDelegateImpl implements RecipeApiDelegate {
 
         if(recipeList.size() > 0) {
             HttpHeaders headers = new HttpHeaders();
-            headers.add("X-Result-Count", String.valueOf(recipeList.size()));
-            headers.add("X-Total-Count", String.valueOf(recordCount));
+            headers.add(StringConstants.X_RESULT_COUNT, String.valueOf(recipeList.size()));
+            headers.add(StringConstants.X_TOTAL_COUNT, String.valueOf(recordCount));
 
             return new ResponseEntity<List<Recipe>>(recipeList, headers, HttpStatus.OK);
         }
     
-        throw new NotFoundException("No Record Found", 
-                "For this search criteria. No Record");
+        throw new NotFoundException(MessageConstants.NO_RECORD_FOUND, 
+            MessageConstants.NO_RECORD_FOUND);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public ResponseEntity<Recipe> patchRecipe(String id, Object recipe) {
         if(!(recipe instanceof HashMap)) {
-            throw new BadRequestException("Wrong Data Format", 
-                "Please pass data in key-value pair");
+            throw new BadRequestException(MessageConstants.WRONG_DATA_FORMAT, 
+            MessageConstants.PLEASE_PASS_DATA_IN_KEY_VALUE_PAIR);
         }
 
         if(!recipeRepository.existsById(id)) {
-            throw new NotFoundException("Not Found", 
-                "Record Not Found");
+            throw new NotFoundException(MessageConstants.NOT_FOUND, 
+            MessageConstants.RECORD_NOT_FOUND);
         }
 
         Map<String, Object> data = (Map<String, Object>) recipe;
 
-        if(data.containsKey("id") || data.containsKey("href") || data.containsKey("name")) {
-            throw new BadRequestException("Update Error", 
-                "Id, href and Name are not Patchable attribute");
+        if(data.containsKey(StringConstants.ID) 
+            || data.containsKey(StringConstants.HREF) 
+            || data.containsKey(StringConstants.NAME)) {
+            throw new BadRequestException(MessageConstants.UPDATE_ERROR, 
+            MessageConstants.ID_HREF_AND_NAME_NOT_UPDATABLE);
         }
         
         recipeRepository.patchRecipe(id, data);
@@ -208,12 +203,11 @@ public class RecipeApiDelegateImpl implements RecipeApiDelegate {
     @Override
     public ResponseEntity<Void> deleteRecipe(String id) {
         if(!recipeRepository.existsById(id)) {
-            throw new NotFoundException("Not Found", 
-                "Record Not Found");
+            throw new NotFoundException(MessageConstants.NOT_FOUND, 
+            MessageConstants.RECORD_NOT_FOUND);
         }
         
         recipeRepository.deleteById(id);
-
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
@@ -222,15 +216,15 @@ public class RecipeApiDelegateImpl implements RecipeApiDelegate {
         Recipe recipe) {
 
         if(recipe.getHref() != null || recipe.getName() != null ) {
-            throw new BadRequestException("Update Error", 
-                "Id, href and Name are not Updatable attribute");
+            throw new BadRequestException(MessageConstants.UPDATE_ERROR, 
+            MessageConstants.ID_HREF_AND_NAME_NOT_UPDATABLE);
         }
 
         Optional<Recipe> recipeOptional = recipeRepository.findById(id);
 
         if(!recipeOptional.isPresent()) {
-            throw new NotFoundException("Not Found", 
-                "Record Not Found");
+            throw new NotFoundException(MessageConstants.NOT_FOUND, 
+            MessageConstants.RECORD_NOT_FOUND);
         }
 
         Recipe updateRecipe = recipeOptional.get();

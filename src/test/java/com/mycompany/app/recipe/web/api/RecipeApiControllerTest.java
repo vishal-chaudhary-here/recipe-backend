@@ -28,9 +28,11 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.test.context.support.WithMockUser;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@WithMockUser(username="admin",roles={"admin","user"})
 public class RecipeApiControllerTest {
     private static final String RECIPE_ID = "id1";
     private static final String RECIPE_HREF = "http://localhost:8080/demo-api/recipeManagement/v1/stripe/"+RECIPE_ID;

@@ -305,7 +305,12 @@ paths:
           schema:
             $ref: '#/definitions/Error'
 definitions:
-  Any: {}
+  Any:
+    type: object
+    description: The Any(Object) entity.
+    example:
+      name: name
+      instructions: []
   Instruction:
     type: object
     description: The ingredients required to create a recipe

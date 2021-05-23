@@ -1,10 +1,8 @@
 package com.mycompany.app.recipe.config;
 
-
 import com.mycompany.app.recipe.util.StringConstants;
 
 import org.springframework.context.annotation.Bean;
-import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -18,12 +16,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     
-    private Environment environment;
-
-    public SecurityConfiguration(Environment environment) {
-        this.environment = environment;
-    }
-    
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -33,14 +25,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(AuthenticationManagerBuilder builder) throws Exception {
         PasswordEncoder passwordEncoder = passwordEncoder();
         builder.inMemoryAuthentication()
-            .withUser(environment.getProperty("userconfig.user1.username"))
-            .password(passwordEncoder.encode(environment.getProperty("userconfig.user1.password")))
-            .roles(environment.getProperty("userconfig.user1.roles").split(","));
+            .withUser(StringConstants.ADMIN)
+            .password(passwordEncoder.encode(StringConstants.ADMIN))
+            .roles(StringConstants.ADMIN, StringConstants.USER);
 
         builder.inMemoryAuthentication()
-            .withUser(environment.getProperty("userconfig.user2.username"))
-            .password(passwordEncoder.encode(environment.getProperty("userconfig.user2.password")))
-            .roles(environment.getProperty("userconfig.user2.roles").split(","));
+            .withUser(StringConstants.USER)
+            .password(passwordEncoder.encode(StringConstants.USER))
+            .roles(StringConstants.USER);
     }
 
     @Override
@@ -52,14 +44,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         .and()
             .authorizeRequests()
             .antMatchers(HttpMethod.POST, "/demo-api/recipeManagement/v1/recipe")
-                .hasAuthority(StringConstants.ADMIN)
-            .antMatchers(HttpMethod.DELETE, "/demo-api/recipeManagement/v1/recipe")
-                .hasAuthority(StringConstants.ADMIN)
-            .antMatchers(HttpMethod.GET, "/demo-api/recipeManagement/v1/recipe")
-                .fullyAuthenticated()
-            .antMatchers(HttpMethod.PUT, "/demo-api/recipeManagement/v1/recipe")
-                .fullyAuthenticated()
-            .antMatchers(HttpMethod.PATCH, "/demo-api/recipeManagement/v1/recipe")
+                .hasRole(StringConstants.ADMIN)
+            .antMatchers(HttpMethod.DELETE, "/demo-api/recipeManagement/v1/recipe/**")
+                .hasRole(StringConstants.ADMIN)
+            .antMatchers("/**")
                 .fullyAuthenticated()
         .and()
             .httpBasic();
