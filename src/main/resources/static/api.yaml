@@ -2,7 +2,6 @@ swagger: '2.0'
 info:
   title: Recipe API
   version: '1.0'
-host: serverRoot
 basePath: /demo-api/recipeManagement/v1/
 schemes:
   - https
@@ -306,7 +305,12 @@ paths:
           schema:
             $ref: '#/definitions/Error'
 definitions:
-  Any: {}
+  Any:
+    type: object
+    description: The Any(Object) entity.
+    example:
+      name: name
+      instructions: []
   Instruction:
     type: object
     description: The ingredients required to create a recipe
@@ -367,3 +371,8 @@ definitions:
       status:
         type: string
         description: HTTP Error code extension
+securityDefinitions:
+  basicAuth:
+    type: basic
+security:
+  - basicAuth: []

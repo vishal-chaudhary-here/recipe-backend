@@ -1,4 +1,12 @@
 
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+    url: /api.yaml
+  api-docs:
+    enabled: true
+
 server:
   port: 8081
 
@@ -6,4 +14,7 @@ spring:
   data:
     mongodb:
       uri: mongodb://localhost:27017
-      database: tmf
+      database: recipe
+      # authentication-database: admin
+      # username: admin
+      # password: admin

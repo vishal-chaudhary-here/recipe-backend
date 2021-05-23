@@ -5,6 +5,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+
+import com.mycompany.app.recipe.util.ErrorConstants;
+import com.mycompany.app.recipe.util.MessageConstants;
 import com.mycompany.app.recipe.web.api.model.Error;
 
 @ControllerAdvice
@@ -17,8 +20,8 @@ public class ExceptionTranslator {
         Error error = new Error();
         error.setReason(ex.getReason());
         error.setMessage(ex.getMessage());
-        error.setCode("ERR-01");
-        error.setStatus("HttpStatus.BAD_REQUEST");
+        error.setCode(ErrorConstants.ERR_01);
+        error.setStatus(ErrorConstants.BAD_REQUEST);
 
         return new ResponseEntity<Error>(error, HttpStatus.BAD_REQUEST);
     }
@@ -30,8 +33,8 @@ public class ExceptionTranslator {
         Error error = new Error();
         error.setReason(ex.getConflictReason());
         error.setMessage(ex.getConflictMessage());
-        error.setCode("ERR-02");
-        error.setStatus("HttpStatus.CONFLICT");
+        error.setCode(ErrorConstants.ERR_02);
+        error.setStatus(ErrorConstants.CONFLICT);
 
         return new ResponseEntity<Error>(error, HttpStatus.CONFLICT);
     }
@@ -41,10 +44,10 @@ public class ExceptionTranslator {
         RuntimeException ex, WebRequest request) {
 
         Error error = new Error();
-        error.setReason("Internal Server Error");
-        error.setMessage("Something is Wrong");
-        error.setCode("ERR-03");
-        error.setStatus("HttpStatus.INTERNAL_SERVER_ERROR");
+        error.setReason(MessageConstants.INTERNAL_SERVER_ERROR);
+        error.setMessage(MessageConstants.SOMETHING_WENT_WRONG);
+        error.setCode(ErrorConstants.ERR_03);
+        error.setStatus(ErrorConstants.INTERNAL_SERVER_ERROR);
 
         return new ResponseEntity<Error>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -56,8 +59,8 @@ public class ExceptionTranslator {
         Error error = new Error();
         error.setReason(ex.getReason());
         error.setMessage(ex.getMessage());
-        error.setCode("ERR-04");
-        error.setStatus("HttpStatus.NOT_FOUND");
+        error.setCode(ErrorConstants.ERR_04);
+        error.setStatus(ErrorConstants.NOT_FOUND);
 
         return new ResponseEntity<Error>(error, HttpStatus.NOT_FOUND);
     }
@@ -67,10 +70,10 @@ public class ExceptionTranslator {
         IllegalArgumentException ex, WebRequest request) {
 
         Error error = new Error();
-        error.setReason("Illegal Argument");
+        error.setReason(MessageConstants.ILLEGAL_ARGUMENT);
         error.setMessage(ex.getMessage());
-        error.setCode("ERR-05");
-        error.setStatus("HttpStatus.NOT_FOUND");
+        error.setCode(ErrorConstants.ERR_05);
+        error.setStatus(ErrorConstants.NOT_FOUND);
 
         return new ResponseEntity<Error>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
